@@ -1,0 +1,91 @@
+---
+
+- name: create prometheus system group
+  group:
+    name: "{{ prometheus_group }}"
+    system: yes
+    state: present
+
+- name: create prometheus system user
+  user:
+    name: "{{ prometheus_user }}"
+    system: yes
+    shell: "/bin/false"
+    group: "{{ prometheus_group }}"
+    #groups: "ssl-cert"
+    createhome: no
+
+- name: create prometheus directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    mode: 0755
+  with_items:
+    - "{{ prometheus_root_dir }}"
+    - "{{ prometheus_dist_dir }}"
+    - "{{ prometheus_config_dir }}"
+    #- "{{ prometheus_config_dir }}/conf.d"
+    #- "{{ prometheus_rules_dir }}"
+    - "{{ prometheus_file_sd_config_dir }}"
+    - "{{ prometheus_db_dir }}"
+    - "{{ prometheus_log_dir }}"
+
+- name: download prometheus server binary
+  get_url:
+    url: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/{{ prometheus_release_name }}.tar.gz"
+    dest: "{{ prometheus_dist_dir }}/{{ prometheus_release_name }}.tar.gz"
+
+- name: unarchive binary tarball
+  unarchive:
+    copy: no
+    src: "{{ prometheus_dist_dir }}/{{ prometheus_release_name }}.tar.gz"
+    dest: "{{ prometheus_dist_dir }}"
+    #creates: "{{ prometheus_dist_dir }}/{{ prometheus_release_name }}/prometheus"
+  register: prometheus_updated
+  #notify:
+   # - restart prometheus
+- name: copy source files
+  ansible.builtin.copy:
+    src: "{{ prometheus_dist_dir }}/{{ prometheus_release_name }}/"
+    dest: "{{ prometheus_root_dir }}/"
+    remote_src: yes
+    owner: prometheus
+    group: prometheus
+
+- name: created config file
+  template:
+    src: etc/prometheus.yml.j2
+    dest: /etc/prometheus/prometheus.yml
+    owner: prometheus
+    group: prometheus
+    #mode: 0644
+  #notify:
+  #  - restart prometheus
+- name: create envfile for startup prometheus
+  template:
+    src: etc/sysconfig/prometheus.j2
+    dest: /etc/sysconfig/prometheus
+    owner: prometheus
+    group: prometheus
+  notify:
+    - restart prometheus
+
+- name: create systemd service unit
+  template:
+    src: systemd/prometheus.service.j2
+    dest: /usr/lib/systemd/system/prometheus.service
+    owner: prometheus
+    group: prometheus
+#    mode: 0644
+  #when: ansible_service_mgr == 'systemd'
+#  notify:
+#    - service reenable
+#    - restart prometheus
+- name: ensure prometheus service is enabled
+  service:
+    name: prometheus
+    daemon_reload: true
+    state: started
+    enabled: yes

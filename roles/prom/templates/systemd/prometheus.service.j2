@@ -1,0 +1,16 @@
+[Unit]
+Description=Prometheus Server
+Documentation=https://github.com/prometheus/prometheus
+
+[Service]
+Restart=always
+User={{ prometheus_user }}
+Group={{ prometheus_group }}
+EnvironmentFile=/etc/sysconfig/prometheus
+ExecStart={{ prometheus_root_dir }}prometheus $OPTIONS
+ExecReload=/bin/kill -HUP $MAINPID
+TimeoutStopSec=200s
+SendSIGKILL=no
+
+[Install]
+WantedBy=multi-user.target
