@@ -1,0 +1,10 @@
+---
+prometheus_node_exporter_version: 1.5.0
+prometheus_node_exporter_release_name: "node_exporter-{{ prometheus_node_exporter_version }}.linux-{{ go_arch }}"
+prometheus_node_exporter_enabled_collectors: []
+prometheus_node_exporter_disabled_collectors: []
+prometheus_node_exporter_root_dir: "/usr/local/bin"
+
+prometheus_node_exporter_config_flags:
+  'web.listen-address': '0.0.0.0:9100'
+  'log.level': 'info'

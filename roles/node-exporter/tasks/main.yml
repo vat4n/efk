@@ -1,0 +1,50 @@
+---
+- name: download node exporter binary
+  get_url:
+    url: "https://github.com/prometheus/node_exporter/releases/download/v{{ prometheus_node_exporter_version }}/{{ prometheus_node_exporter_release_name }}.tar.gz"
+    dest: "/tmp/{{ prometheus_node_exporter_release_name }}.tar.gz"
+
+- name: unarchive binary tarball
+  unarchive:
+    copy: no
+    src: "/tmp/{{ prometheus_node_exporter_release_name }}.tar.gz"
+    dest: "/tmp/"
+  #register: prometheus_updated
+  notify:
+    - restart node exporter
+
+- name: copy source files
+  ansible.builtin.copy:
+    src: "/tmp/{{ prometheus_node_exporter_release_name }}/node_exporter"
+    dest: "{{ prometheus_node_exporter_root_dir }}/"
+    remote_src: yes
+    owner: root
+    group: root
+    mode: 0755
+
+- name: create envfile for startup prometheus
+  template:
+    src: etc/sysconfig/node_exporter.j2
+    dest: /etc/sysconfig/node_exporter
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart node exporter
+
+- name: create systemd service unit
+  template:
+    src: systemd/node_exporter.j2
+    dest: /usr/lib/systemd/system/node_exporter.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart node exporter
+    -
+- name: ensure node_exporter service is enabled
+  service:
+    name: node_exporter
+    daemon_reload: true
+    state: started
+    enabled: yes
