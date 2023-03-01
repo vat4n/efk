@@ -36,6 +36,15 @@
   template:
     src: systemd/node_exporter.j2
     dest: /usr/lib/systemd/system/node_exporter.service
+    owner: prometheus
+    group: prometheus
+    mode: 0644
+#  notify:
+#    - restart node exporter
+- name: create clients file
+  template:
+    src: etc/clients.yml.j2
+    dest: /etc/prometheus/clients.yml
     owner: root
     group: root
     mode: 0644
