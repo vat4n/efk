@@ -2,4 +2,4 @@ files
 .idea/
 base_configs
 .test
-test_ela*
+roles/test_ela*
