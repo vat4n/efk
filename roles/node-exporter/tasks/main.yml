@@ -41,7 +41,7 @@
     mode: 0644
   notify:
     - restart node exporter
-    -
+
 - name: ensure node_exporter service is enabled
   service:
     name: node_exporter
