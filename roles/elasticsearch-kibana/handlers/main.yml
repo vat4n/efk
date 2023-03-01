@@ -1,0 +1,15 @@
+---
+# handlers file for elasticsearch-kibana
+- name: elastic_service_enable
+  command: systemctl daemon-reload
+#    - systemctl enable elasticsearch.service
+
+- name: restart elasticsearch
+  service:
+    name: elasticsearch
+    state: restarted
+
+- name: restart kibana
+  service:
+    name: kibana
+    state: restarted

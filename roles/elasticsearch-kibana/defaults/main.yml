@@ -1,0 +1,25 @@
+---
+# defaults file for test_elasticsearch-kibana
+elastic_kibana_version: "8.6.2"
+root_dir: "/usr/local/bin"
+
+elasticsearch_release_name: "elasticsearch-{{ elasticsearch_version }}-linux-x86_64"
+kabana_release_name: "kibana-{{ kibana_version }}-linux-x86_64"
+
+elasticsearch_network_host: localhost
+elasticsearch_http_port: 9200
+elasticsearch_jvm_size_min: 1g
+elasticsearch_jvm_size_max: 2g
+elasticsearch_data_file: "/var/lib/elasticsearch"
+elasticsearch_log_file: "/var/log/elasticsearch"
+
+kibana_server_port: 5601
+kibana_server_host: localhost
+kibana_username: "kibana_system"
+kibana_password: "pass"
+kibana_publicBaseUrl: "http://localhost:5601"
+elasticsearch_hosts: ["https://localhost:9200"]
+elasticsearch_ssl_certificateAuthorities: [ "/etc/elasticsearch/certs/http_ca.crt" ]
+
+
+elasticsearch_extra_options: ''
