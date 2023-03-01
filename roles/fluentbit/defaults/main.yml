@@ -1,0 +1,5 @@
+---
+# defaults file for fluentbit
+version: "2.0.8"
+es_host: localhost
+es_port: 9200

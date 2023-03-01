@@ -1,0 +1,31 @@
+#---
+## tasks file for fluentbit
+#"https://packages.fluentbit.io/centos/7/fluent-bit-2.0.9-1.x86_64.rpm"
+#"[fluent-bit]
+# name = Fluent Bit
+# baseurl = https://packages.fluentbit.io/centos/$releasever/$basearch/
+# gpgcheck=1
+# gpgkey=https://packages.fluentbit.io/fluentbit.key
+# repo_gpgcheck=1
+# enabled=1"
+- name: Add elasticsearch repository
+  ansible.builtin.yum_repository:
+    name: "fluent-bit"
+    description: "Fluent bit"
+    file: fluentbit
+    baseurl: "https://packages.fluentbit.io/centos/$releasever/$basearch/"
+    gpgkey: "https://packages.fluentbit.io/fluentbit.key"
+    gpgcheck: yes
+    enabled: 1
+- name: install Fluentbit from rpm
+  ansible.builtin.yum:
+    name: fluent-bit
+    state: present
+    #enablerepo: "Fluentbit"
+    #register: install_elastic
+    #notify:
+- name: Enable Service fluent-bit
+  service:
+    name: fluent-bit
+    state: started
+    enabled: true
